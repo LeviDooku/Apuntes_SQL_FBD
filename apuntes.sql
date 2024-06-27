@@ -7,12 +7,12 @@
 
 //<ctrl + enter> para ejecutar las líneas seleccionadas
 
-describe ventas;
+describe ventas; 
 describe proyecto;
 describe proveedor; 
 describe pieza;
 
-select table_name from user_tables;
+select table_name from user_tables; --Para ver las tablas en tu usuario
 
 //Tablas: creación, inserción de datos, borrado 
 
