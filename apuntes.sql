@@ -106,6 +106,10 @@ select distinct codpro from ventas; --Consulta anterior sin repetir valores repe
 select * from ventas where codpro='S1;' --Ventas realizadas por el proveedor S1
 select * from pieza where ciudad='Madrid' and (color='Rojo' or color='Gris'); --Ej. 3.3
 
+
+//(TENGO QUE ORGANIZAR ESTA PARTE)
+
+
 //Consultas multitabla (Join)
 
 select nompro, cantidad from proveedor
