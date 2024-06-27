@@ -3,12 +3,16 @@
 //2D - 2024               //
 ////////////////////////////
 
+//NOTA: muchas de las creaciones, ejemplos y borrados no se pueden realmente usar, debido a que usan BD inventadas
+
+//<ctrl + enter> para ejecutar las líneas seleccionadas
+
 describe ventas;
 describe proyecto;
 describe proveedor; 
 describe pieza;
 
-select table_name from user_tables
+select table_name from user_tables;
 
 //Tablas: creación, inserción de datos, borrado 
 
@@ -16,7 +20,7 @@ select table_name from user_tables
 
 create table plantilla(
     dni varchar2(9) unique, --Los valores deberán ser únicos
-    nombre varchar2(20),
+    nombre varchar2(20) not null,
     estadocivil varchar2(10),
         check (estadocivil in ('soltero', 'casado', 'divorciado', 'viudo')), --comprobar que los valores sean estos
     fechaalta date,
@@ -73,6 +77,34 @@ create table faltas(
     foreign key (ELocal,EVisitante) references encuentros(ELocal,EVisitante),
     primary key (codJ,ELocal,EVisitante)
 );
+
+    //Inserción de tuplas
+    
+insert into plantilla (dni, nombre, estadocivil, fechaalta)
+    values ('123456789S', 'Cabrerizo', 'casado', sysdate);
+
+insert into plantilla select * from trabajadores; --Insertar a partir de otra tabla
+
+    //Modificación de datos
+
+update plantilla 
+set estadocivil='divorciado'
+where nombre='Cabrerizo'; --Joder....
+
+    //Borrado de tuplas
+    
+delete from plantilla where nombre='Cabrerizo';
+delete from plantilla; --Borrado de todas las tuplas
+
+//Consultas básicas
+
+//A partir de aquí empiezo a usar las tablas presentes en el cuadernillo
+
+select * from ventas; --Mostrar toda la tabla ventas
+select codpro from ventas; --Mostrar codpro de ventas
+select distinct codpro from ventas; --Consulta anterior sin repetir valores repetidos
+select * from ventas where codpro='S1;' --Ventas realizadas por el proveedor S1
+select * from pieza where ciudad='Madrid' and (color='Rojo' or color='Gris'); --Ej. 3.3
 
 //Consultas multitabla (Join)
 
