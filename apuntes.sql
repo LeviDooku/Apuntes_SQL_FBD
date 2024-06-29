@@ -1,7 +1,7 @@
-////////////////////////////
-//Pedro Velasco Santana   //
-//2D - 2024               //
-////////////////////////////
+----------------------------
+--Pedro Velasco Santana   --
+--2D - 2024               --
+----------------------------
 
 --NOTA: muchas de las creaciones y borrados no se pueden realmente usar, debido a que usan tablas inventadas
 
