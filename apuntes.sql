@@ -12,7 +12,9 @@ describe proyecto;
 describe proveedor; 
 describe pieza;
 
-select table_name from user_tables; --Para ver las tablas en tu usuario
+select table_name from user_tables; --Para ver las tablas en tu usuario (vista de catálogo)
+
+---------------------------------------------------------------------------------------------------------------------------------
 
 //Tablas: creación, inserción de datos, borrado 
 
@@ -39,7 +41,7 @@ drop table plantilla;
 
     //Modificación esquema tabla
     
-add plantilla fechabaja date; --(Ej 1.5)
+add plantilla fechabaja date; --Ej. 1.5
 
     //Ejercicios adicionales capitulo 1
     
@@ -96,6 +98,8 @@ where nombre='Cabrerizo'; --Joder....
 delete from plantilla where nombre='Cabrerizo';
 delete from plantilla; --Borrado de todas las tuplas
 
+---------------------------------------------------------------------------------------------------------------------------------
+
 //Consultas básicas
 
 //(A partir de aquí empiezo a usar las tablas presentes en el cuadernillo)
@@ -107,6 +111,8 @@ select * from ventas where codpro='S1;' --Ventas realizadas por el proveedor S1
 select * from pieza where ciudad='Madrid' and (color='Rojo' or color='Gris'); --Ej. 3.3
 select codpie from ventas where cantidad between 200 and 300; --Ej. 3.4
 select * from pieza where nompie like 'to%' or nompie like 'To%'; -- Ej. 3.5
+
+---------------------------------------------------------------------------------------------------------------------------------
 
 //Consultas multitabla / consultas de union
 
@@ -134,24 +140,55 @@ select ciudad from proyecto
 union all
 select ciudad from pieza; --Ej. 3.10 (Lo mismo pero se muestran las tuplas con igual valor)
 
+    //Unión interna: join, natural join
+    
+--Join: combina filas de dos tablas basándose en una coincidencia explicitada en ON (hace falta alias)
+--Natural join: encuentra la coincidencia en todas las filas de dos tablas
+
+select distinct codpie from ventas v
+join
+(select * from proveedor where ciudad like 'Ma%') p 
+on v.codpro=p.codpro; --Ej. 3.15
+
+select distinct codpie from ventas v
+join
+proveedor p
+on v.codpro=p.codpro
+where p.ciudad like 'Ma%'; --Otra forma de hacer Ej. 3.15
+
+select distinct codpie from ventas
+natural join 
+(select * from proveedor where ciudad like 'Ma%'); --Versión usando natural join
+
+--Ej. 3.16
+select distinct ciudad, codpie, codpj, codpro from ventas
+natural join(
+select distinct ciudad, codpro, codpj from proveedor
+natural join 
+proyecto);  
+
+--Natural join interno: une proveedor y proyecto en ciudad y obtiene codpj y codpro
+--Natural join externo: une ventas con el resultado del natural join interno
+
+--Ej. 3.16 usando join on. Más 'seguro' pero más lioso (en mi opinión)
+select distinct p.ciudad, v.codpie, v.codpro, v.codpj from ventas v
+join 
+proveedor p 
+on v.codpro = p.codpro
+join
+proyecto pr 
+on v.codpj = pr.codpj
+where p.ciudad = pr.ciudad; 
+
+--1er join: junta el campo codpro de ventas con el de proveedor
+--2o join: junta el campo codpj de ventas con el de proyecto
+--condición where: las ciudades de los proveedores tienen que ser la misma que la de los proveedores
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------
+
 //(TENGO QUE ORGANIZAR ESTA PARTE)
-
-//Consultas multitabla (Join)
-
-select nompro, cantidad from proveedor
-natural join (select * from ventas where cantidad > 800);
-
-select nompro, cantidad from proveedor p
-join (select * from ventas where cantidad > 800) v on p.codpro=v.codpro; 
-
-select codpie from ventas v
-join (select * from proveedor where ciudad = 'Madrid') p on v.codpro=p.codpro
-order by codpie asc;
-
-select codpie from ventas v
-join proveedor p on v.codpro=p.codpro
-where p.ciudad='Madrid'
-order by codpie asc;
 
 //Subconsultas
 
