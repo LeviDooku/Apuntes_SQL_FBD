@@ -3,7 +3,7 @@
 //2D - 2024               //
 ////////////////////////////
 
-//NOTA: muchas de las creaciones, ejemplos y borrados no se pueden realmente usar, debido a que usan BD inventadas
+//NOTA: muchas de las creaciones y borrados no se pueden realmente usar, debido a que usan tablas inventadas
 
 //<ctrl + enter> para ejecutar las líneas seleccionadas
 
@@ -98,17 +98,43 @@ delete from plantilla; --Borrado de todas las tuplas
 
 //Consultas básicas
 
-//A partir de aquí empiezo a usar las tablas presentes en el cuadernillo
+//(A partir de aquí empiezo a usar las tablas presentes en el cuadernillo)
 
 select * from ventas; --Mostrar toda la tabla ventas
 select codpro from ventas; --Mostrar codpro de ventas
 select distinct codpro from ventas; --Consulta anterior sin repetir valores repetidos
 select * from ventas where codpro='S1;' --Ventas realizadas por el proveedor S1
 select * from pieza where ciudad='Madrid' and (color='Rojo' or color='Gris'); --Ej. 3.3
+select codpie from ventas where cantidad between 200 and 300; --Ej. 3.4
+select * from pieza where nompie like 'to%' or nompie like 'To%'; -- Ej. 3.5
 
+//Consultas multitabla / consultas de union
+
+    //Unión externa: union / union all / intersect / minus
+    
+select ciudad from proveedor where status > 2 --Proveedores con status > 2
+intersect 
+select ciudad from proveedor where ciudad not in( --Ciudades de proveedor que sean distintas a la ciudad donde se hace P1
+    select ciudad from pieza where codpie = 'P1'
+); --Ej. 3.7
+
+select codpj from ventas where codpro='S1'
+minus 
+select codpj from ventas where codpro <> 'S1'; --Ej. 3.8 (no sale nada pq no hay proyecto abastecido SOLO por S1)
+
+select ciudad from proveedor
+union 
+select ciudad from proyecto
+union
+select ciudad from pieza; --Ej. 3.9
+
+select ciudad from proveedor
+union all
+select ciudad from proyecto
+union all
+select ciudad from pieza; --Ej. 3.10 (Lo mismo pero se muestran las tuplas con igual valor)
 
 //(TENGO QUE ORGANIZAR ESTA PARTE)
-
 
 //Consultas multitabla (Join)
 
