@@ -3,9 +3,9 @@
 //2D - 2024               //
 ////////////////////////////
 
-//NOTA: muchas de las creaciones y borrados no se pueden realmente usar, debido a que usan tablas inventadas
+--NOTA: muchas de las creaciones y borrados no se pueden realmente usar, debido a que usan tablas inventadas
 
-//<ctrl + enter> para ejecutar las líneas seleccionadas
+--<ctrl + enter> para ejecutar las líneas seleccionadas
 
 describe ventas; 
 describe proyecto;
@@ -16,9 +16,9 @@ select table_name from user_tables; --Para ver las tablas en tu usuario (vista d
 
 ---------------------------------------------------------------------------------------------------------------------------------
 
-//Tablas: creación, inserción de datos, borrado 
+--Tablas: creación, inserción de datos, borrado 
 
-    //Creación
+    --Creación
 
 create table plantilla(
     dni varchar2(9) unique, --Los valores deberán ser únicos
@@ -35,15 +35,15 @@ create table serjefe(
     primary key(dnitrabajador)
 );
 
-    //Borrado
+    --Borrado
     
 drop table plantilla;
 
-    //Modificación esquema tabla
+    --Modificación esquema tabla
     
 add plantilla fechabaja date; --Ej. 1.5
 
-    //Ejercicios adicionales capitulo 1
+    --Ejercicios adicionales capitulo 1
     
 create table equipo(
     codE varchar2(5) not null,
@@ -80,29 +80,29 @@ create table faltas(
     primary key (codJ,ELocal,EVisitante)
 );
 
-    //Inserción de tuplas
+    --Inserción de tuplas
     
 insert into plantilla (dni, nombre, estadocivil, fechaalta)
     values ('123456789S', 'Cabrerizo', 'casado', sysdate);
 
 insert into plantilla select * from trabajadores; --Insertar a partir de otra tabla
 
-    //Modificación de datos
+    --Modificación de datos
 
 update plantilla 
 set estadocivil='divorciado'
 where nombre='Cabrerizo'; --Joder....
 
-    //Borrado de tuplas
+    --Borrado de tuplas
     
 delete from plantilla where nombre='Cabrerizo';
 delete from plantilla; --Borrado de todas las tuplas
 
 ---------------------------------------------------------------------------------------------------------------------------------
 
-//Consultas básicas
+--Consultas básicas
 
-//(A partir de aquí empiezo a usar las tablas presentes en el cuadernillo)
+--(A partir de aquí empiezo a usar las tablas presentes en el cuadernillo)
 
 select * from ventas; --Mostrar toda la tabla ventas
 select codpro from ventas; --Mostrar codpro de ventas
@@ -114,9 +114,9 @@ select * from pieza where nompie like 'to%' or nompie like 'To%'; -- Ej. 3.5
 
 ---------------------------------------------------------------------------------------------------------------------------------
 
-//Consultas multitabla / consultas de union
+--Consultas multitabla / consultas de union
 
-    //Unión externa: union / union all / intersect / minus
+    --Unión externa: union / union all / intersect / minus
     
 select ciudad from proveedor where status > 2 --Proveedores con status > 2
 intersect 
@@ -140,7 +140,7 @@ select ciudad from proyecto
 union all
 select ciudad from pieza; --Ej. 3.10 (Lo mismo pero se muestran las tuplas con igual valor)
 
-    //Unión interna: join, natural join
+    --Unión interna: join, natural join
     
 --Join: combina filas de dos tablas basándose en una coincidencia explicitada en ON (hace falta alias)
 --Natural join: encuentra la coincidencia en todas las filas de dos tablas
@@ -184,13 +184,14 @@ where p.ciudad = pr.ciudad;
 --2o join: junta el campo codpj de ventas con el de proyecto
 --condición where: las ciudades de los proveedores tienen que ser la misma que la de los proveedores
 
-
+    //Producto cartesiano
+    
 
 ---------------------------------------------------------------------------------------------------------------------------------
 
-//(TENGO QUE ORGANIZAR ESTA PARTE)
+--(TENGO QUE ORGANIZAR ESTA PARTE)
 
-//Subconsultas
+--Subconsultas
 
 select codpie from ventas 
 group by codpie
