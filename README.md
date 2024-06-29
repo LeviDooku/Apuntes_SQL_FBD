@@ -8,7 +8,10 @@ Los contenidos son extraídos la mayoría del cuadernillo aunque estos apuntes n
 
 Lista de contenidos hasta el momento:
 
-- Creación, modificación y borrado de tablas
-- Inserción de datos, modificación y borrado 
-- Consultas básicas de tablas
+- Creación, modificación y borrado de tabla:
+	- CREATE TABLE, DROP TABLE, ADD.  
+- Inserción de datos, modificación y borrado:  
+	-  INSERT INTO, UPDATE, DELETE FROM.  
+- Consultas básicas de tablas:  
+	- SELECT + clausulas: WHERE, LIKE, operadores (and, or, between, =).
 
