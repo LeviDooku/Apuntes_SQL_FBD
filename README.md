@@ -13,5 +13,7 @@ Lista de contenidos hasta el momento:
 - Inserción de datos, modificación y borrado:  
 	-  INSERT INTO, UPDATE, DELETE FROM.  
 - Consultas básicas de tablas:  
-	- SELECT + clausulas: WHERE, LIKE, operadores (and, or, between, =).
+	- SELECT + clausulas: WHERE, LIKE, operadores (and, or, between, =).  
+- Consultas multitabla y consultas de unión:  
+	- JOIN, NATURAL JOIN, UNION, UNION ALL, MINUS, INTERSECT
 
