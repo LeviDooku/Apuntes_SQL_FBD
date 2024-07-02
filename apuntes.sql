@@ -186,7 +186,7 @@ where p.ciudad = pr.ciudad;
 
     --Producto cartesiano
     
--- Es una forma menos sofisticada de aplicar un join / natural join
+--Es una forma menos sofisticada de aplicar un join / natural join
 
 select proveedor.codpro, proyecto.codpj, pieza.codpie
 from proveedor, proyecto, pieza, ventas
@@ -209,7 +209,7 @@ join
 pieza pi
 on pi.codpie = v.codpie
 where p.ciudad = pr.ciudad and pr.ciudad = pi.ciudad; --Ej. 3.12 con join (haber hecho esto sin chatgpt me convierte en dios del join?)
-    
+        
     -- Ordenación (order by)
     
 select nompro from proveedor 
@@ -262,18 +262,68 @@ select codpie from pieza where peso > all (select peso from pieza where nompie l
 select * from pieza where peso >= all (select peso from pieza); --Ej 3.23 ; >= para no excluir la mayor. Usando > busca una más pesada que la más pesada (no hay xd)
 select p1.nompie, p1.peso, p2.nompie, p2.peso from pieza p1, pieza p2 where p1.peso > p2.peso; --Ej 3.14 (Usa producto cartesiano; el resultado del 3.23 da una salida más limpia)
 
-    --La división (dio mio)
+    -- La división (perdón por tantos comentarios, no es fácil de entender sin ellos jajasjd)
+    
+--La división es una operación que permite encontrar registros que están relacionados con todos los registros de otro conjunto.
+
+--Aproximación mixta (en mi opinión la más fácil)
+--El objetivo es obtener un conjunto vacío formado por un conjunto general (sustraendo) y otro específico (minuendo)
+
+/*
+Ejemplo
+
+Compara el conjunto de todas las piezas con las piezas suministradas por el proveedor actual. 
+Si el resultado es vacío, el proveedor ha suministrado todas las piezas.
+*/
+
+select codpro from proveedor where not exists ( --Cuando la subconsulta devuelva conjunto vacío, hemos encontrado la solución
+select distinct codpie from pieza --Conjunto con todos los códigos de piezas
+
+minus --Menos 
+
+select distinct codpie from ventas where proveedor.codpro = ventas.codpro --Conjunto que relaciona los codpro con codpie
+);
+
+--Consulta equivalente a sustraendo de la división (sirve pa sacar la solución "a mano"):
+select distinct v.codpie, v.codpro from ventas v join proveedor p on p.codpro = v.codpro;
+
+/*
+Ejercicio 3.24
+
+Compara el conjunto de todos los proyectos en Londres con los proyectos a los que se ha suministrado la pieza actual. 
+Si el resultado es vacío, la pieza ha sido suministrada a todos los proyectos en Londres.
+*/
+
+select codpie from pieza where not exists ( 
+select distinct pr.codpj from proyecto pr where pr.ciudad like 'Lo%' --Todos los proyectos de Londres (C. específica)
+
+minus --Menos
+
+select distinct v.codpj from ventas v where v.codpie = pieza.codpie --Todos los proyectos a los que se ha suministrado una pieza (C. general)
+); 
+
+--Consulta equivalente a sustraendo de la división:
+select distinct v.codpj, v.codpie from ventas v join proyecto p on p.codpj = v.codpj order by codpj, codpie;
+
+select codpj, codpie from ventas where codpie='P1' order by codpj;
+
+/*
+Ejercicio 3.25
+
+Compara el conjunto de todos las piezas procedentes de una ciudad donde hay un proyecto con todas 
+las piezas suministradas por el proveedor actual.
+Si el resultado es vacío, todas las piezas del primer conjunto han sido proveídas por el proveedor
+(joe vaya juego d palabras)
+*/
+
+select codpro from proveedor where not exists(
+select pi.codpie from pieza pi join proyecto pr on pi.ciudad = pr.ciudad --Todas las piezas procedentes de una ciudad donde hay un proyecto (C. específico)
+
+minus --Menos
+
+select v.codpie from ventas v where v.codpro = proveedor.codpro --Todos las las piezas suministradas por un proveedor (C. general)
+);
+
+--Consulta equivalente a sustraendo de la división:
+select distinct v.codpro, v.codpie from ventas v join proveedor pr on v.codpro = pr.codpro order by codpro;
 ---------------------------------------------------------------------------------------------------------------------------------
-
-
---(TENGO QUE ORGANIZAR ESTA PARTE)
-
---Subconsultas
-
-select codpie from ventas 
-group by codpie
-having sum(cantidad) > (select sum(cantidad) from ventas where codpie='P1');
-
-select * from ventas where codpro in (select codpro from proveedor where ciudad='Londres' or ciudad='Madrid');
-
-select codpie, nompie from pieza where peso > any (select peso from pieza where nompie='Tornillo')
