@@ -195,7 +195,7 @@ and proyecto.ciudad = pieza.ciudad
 and proveedor.codpro = ventas.codpro
 and proyecto.codpj = ventas.codpj
 and pieza.codpie = ventas.codpie
-and cantidad > 0; --Ej. 3.12
+and cantidad > 0; --Ej. 3.12 con producto cartesiano
 
 select distinct v.codpro, v.codpj, v.codpie from 
 ventas v
@@ -208,10 +208,35 @@ on pr.codpj = v.codpj
 join 
 pieza pi
 on pi.codpie = v.codpie
-where p.ciudad = pr.ciudad and pr.ciudad = pi.ciudad; --Ej. 3.12 (haber hecho esto sin chatgpt me convierte en dios del join?)
+where p.ciudad = pr.ciudad and pr.ciudad = pi.ciudad; --Ej. 3.12 con join (haber hecho esto sin chatgpt me convierte en dios del join?)
     
+    -- Ordenación (order by)
+    
+select nompro from proveedor 
+order by nompro; --Ordenación alfabética de menor a mayor por defecto
+
+select nompro from proveedor
+order by nompro desc; --Contrario a anterior
+
+select cantidad, fecha from ventas
+order by cantidad, fecha desc; --Ej. 3.18
 
 ---------------------------------------------------------------------------------------------------------------------------------
+
+-- Subconsultas
+
+    -- Operadores: IN, ANY, ALL y comparadores
+    
+-- IN
+
+select codpie from ventas 
+where codpro in (
+select codpro from proveedor where ciudad like 'Lo%'); --Todas las piezas suministradas por proveedores de Londres
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------
+
 
 --(TENGO QUE ORGANIZAR ESTA PARTE)
 
