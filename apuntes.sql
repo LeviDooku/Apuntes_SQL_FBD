@@ -184,7 +184,31 @@ where p.ciudad = pr.ciudad;
 --2o join: junta el campo codpj de ventas con el de proyecto
 --condición where: las ciudades de los proveedores tienen que ser la misma que la de los proveedores
 
-    //Producto cartesiano
+    --Producto cartesiano
+    
+-- Es una forma menos sofisticada de aplicar un join / natural join
+
+select proveedor.codpro, proyecto.codpj, pieza.codpie
+from proveedor, proyecto, pieza, ventas
+where proveedor.ciudad = proyecto.ciudad
+and proyecto.ciudad = pieza.ciudad
+and proveedor.codpro = ventas.codpro
+and proyecto.codpj = ventas.codpj
+and pieza.codpie = ventas.codpie
+and cantidad > 0; --Ej. 3.12
+
+select distinct v.codpro, v.codpj, v.codpie from 
+ventas v
+join 
+proveedor p
+on p.codpro = v.codpro
+join 
+proyecto pr
+on pr.codpj = v.codpj
+join 
+pieza pi
+on pi.codpie = v.codpie
+where p.ciudad = pr.ciudad and pr.ciudad = pi.ciudad; --Ej. 3.12 (haber hecho esto sin chatgpt me convierte en dios del join?)
     
 
 ---------------------------------------------------------------------------------------------------------------------------------
