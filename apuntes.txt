@@ -1,11 +1,11 @@
-////////////////////////////
-//Pedro Velasco Santana   //
-//2D - 2024               //
-////////////////////////////
+----------------------------
+--Pedro Velasco Santana   --
+--2D - 2024               --
+----------------------------
 
-//NOTA: muchas de las creaciones y borrados no se pueden realmente usar, debido a que usan tablas inventadas
+--NOTA: muchas de las creaciones y borrados no se pueden realmente usar, debido a que usan tablas inventadas
 
-//<ctrl + enter> para ejecutar las líneas seleccionadas
+--<ctrl + enter> para ejecutar las líneas seleccionadas
 
 describe ventas; 
 describe proyecto;
@@ -16,9 +16,9 @@ select table_name from user_tables; --Para ver las tablas en tu usuario (vista d
 
 ---------------------------------------------------------------------------------------------------------------------------------
 
-//Tablas: creación, inserción de datos, borrado 
+--Tablas: creación, inserción de datos, borrado 
 
-    //Creación
+    --Creación
 
 create table plantilla(
     dni varchar2(9) unique, --Los valores deberán ser únicos
@@ -35,15 +35,15 @@ create table serjefe(
     primary key(dnitrabajador)
 );
 
-    //Borrado
+    --Borrado
     
 drop table plantilla;
 
-    //Modificación esquema tabla
+    --Modificación esquema tabla
     
 add plantilla fechabaja date; --Ej. 1.5
 
-    //Ejercicios adicionales capitulo 1
+    --Ejercicios adicionales capitulo 1
     
 create table equipo(
     codE varchar2(5) not null,
@@ -80,29 +80,29 @@ create table faltas(
     primary key (codJ,ELocal,EVisitante)
 );
 
-    //Inserción de tuplas
+    --Inserción de tuplas
     
 insert into plantilla (dni, nombre, estadocivil, fechaalta)
     values ('123456789S', 'Cabrerizo', 'casado', sysdate);
 
 insert into plantilla select * from trabajadores; --Insertar a partir de otra tabla
 
-    //Modificación de datos
+    --Modificación de datos
 
 update plantilla 
 set estadocivil='divorciado'
 where nombre='Cabrerizo'; --Joder....
 
-    //Borrado de tuplas
+    --Borrado de tuplas
     
 delete from plantilla where nombre='Cabrerizo';
 delete from plantilla; --Borrado de todas las tuplas
 
 ---------------------------------------------------------------------------------------------------------------------------------
 
-//Consultas básicas
+--Consultas básicas
 
-//(A partir de aquí empiezo a usar las tablas presentes en el cuadernillo)
+--(A partir de aquí empiezo a usar las tablas presentes en el cuadernillo)
 
 select * from ventas; --Mostrar toda la tabla ventas
 select codpro from ventas; --Mostrar codpro de ventas
@@ -114,9 +114,9 @@ select * from pieza where nompie like 'to%' or nompie like 'To%'; -- Ej. 3.5
 
 ---------------------------------------------------------------------------------------------------------------------------------
 
-//Consultas multitabla / consultas de union
+--Consultas multitabla / consultas de union
 
-    //Unión externa: union / union all / intersect / minus
+    --Unión externa: union / union all / intersect / minus
     
 select ciudad from proveedor where status > 2 --Proveedores con status > 2
 intersect 
@@ -140,7 +140,7 @@ select ciudad from proyecto
 union all
 select ciudad from pieza; --Ej. 3.10 (Lo mismo pero se muestran las tuplas con igual valor)
 
-    //Unión interna: join, natural join
+    --Unión interna: join, natural join
     
 --Join: combina filas de dos tablas basándose en una coincidencia explicitada en ON (hace falta alias)
 --Natural join: encuentra la coincidencia en todas las filas de dos tablas
@@ -184,19 +184,146 @@ where p.ciudad = pr.ciudad;
 --2o join: junta el campo codpj de ventas con el de proyecto
 --condición where: las ciudades de los proveedores tienen que ser la misma que la de los proveedores
 
-    //Producto cartesiano
+    --Producto cartesiano
     
+--Es una forma menos sofisticada de aplicar un join / natural join
+
+select proveedor.codpro, proyecto.codpj, pieza.codpie
+from proveedor, proyecto, pieza, ventas
+where proveedor.ciudad = proyecto.ciudad
+and proyecto.ciudad = pieza.ciudad
+and proveedor.codpro = ventas.codpro
+and proyecto.codpj = ventas.codpj
+and pieza.codpie = ventas.codpie
+and cantidad > 0; --Ej. 3.12 con producto cartesiano
+
+select distinct v.codpro, v.codpj, v.codpie from 
+ventas v
+join 
+proveedor p
+on p.codpro = v.codpro
+join 
+proyecto pr
+on pr.codpj = v.codpj
+join 
+pieza pi
+on pi.codpie = v.codpie
+where p.ciudad = pr.ciudad and pr.ciudad = pi.ciudad; --Ej. 3.12 con join (haber hecho esto sin chatgpt me convierte en dios del join?)
+        
+    -- Ordenación (order by)
+    
+select nompro from proveedor 
+order by nompro; --Ordenación alfabética de menor a mayor por defecto
+
+select nompro from proveedor
+order by nompro desc; --Contrario a anterior
+
+select cantidad, fecha from ventas
+order by cantidad, fecha desc; --Ej. 3.18
 
 ---------------------------------------------------------------------------------------------------------------------------------
 
-//(TENGO QUE ORGANIZAR ESTA PARTE)
+-- Subconsultas
 
-//Subconsultas
+    -- Operadores: IN, ANY, ALL y comparadores (<;>;<=;>=;<>)
+    
+-- IN
 
 select codpie from ventas 
-group by codpie
-having sum(cantidad) > (select sum(cantidad) from ventas where codpie='P1');
+where codpro in (
+select codpro from proveedor where ciudad like 'Lo%'); --Todas las piezas suministradas por proveedores de Londres
 
-select * from ventas where codpro in (select codpro from proveedor where ciudad='Londres' or ciudad='Madrid');
+select distinct codpie from ventas 
+where codpro in (
+select codpro from proveedor where ciudad like 'Mad%') --Ej. 3.19 (Para misma salida q 3.15 usar distinct)
+order by codpie; --Ahora puedo usar esto jeje
 
-select codpie, nompie from pieza where peso > any (select peso from pieza where nompie='Tornillo')
+select codpj from proyecto 
+where ciudad in (
+select ciudad from pieza);
+order by codpj;--Ej. 3.20
+
+select codpj from proyecto pj join pieza pi on pj.ciudad = pi.ciudad order by codpj; --Alternativa usando join (más intuitiva)
+
+select codpj from proyecto where codpj not in (
+    select distinct v.codpj from ventas v 
+    join pieza p on v.codpie = p.codpie
+    join proveedor pr on v.codpro = pr.codpro
+    where p.color='Rojo' and pr.ciudad='Londres'
+)
+order by codpj; --Ej. 3.21
+
+-- ANY / ALL 
+
+--(Ejs muy tontos, ya que solo hay un tornillo en la BD, por ende las salidas son las mismas en ambos casos)
+select codpie from pieza where peso > any (select peso from pieza where nompie like 'To%'); --Ejemplo 3.17 (alguna = ANY) más pesada que algún tornillo
+select codpie from pieza where peso > all (select peso from pieza where nompie like 'To%'); --Ej. 3.22 (cualquiera = ALL) más pesada que el tornillo más pesado
+
+select * from pieza where peso >= all (select peso from pieza); --Ej 3.23 ; >= para no excluir la mayor. Usando > busca una más pesada que la más pesada (no hay xd)
+select p1.nompie, p1.peso, p2.nompie, p2.peso from pieza p1, pieza p2 where p1.peso > p2.peso; --Ej 3.14 (Usa producto cartesiano; el resultado del 3.23 da una salida más limpia)
+
+    -- La división (perdón por tantos comentarios, no es fácil de entender sin ellos jajasjd)
+    
+--La división es una operación que permite encontrar registros que están relacionados con todos los registros de otro conjunto.
+
+--Aproximación mixta (en mi opinión la más fácil)
+--El objetivo es obtener un conjunto vacío formado por un conjunto general (sustraendo) y otro específico (minuendo)
+
+/*
+Ejemplo
+
+Compara el conjunto de todas las piezas con las piezas suministradas por el proveedor actual. 
+Si el resultado es vacío, el proveedor ha suministrado todas las piezas.
+*/
+
+select codpro from proveedor where not exists ( --Cuando la subconsulta devuelva conjunto vacío, hemos encontrado la solución
+select distinct codpie from pieza --Conjunto con todos los códigos de piezas
+
+minus --Menos 
+
+select distinct codpie from ventas where proveedor.codpro = ventas.codpro --Conjunto que relaciona los codpro con codpie
+);
+
+--Consulta equivalente a sustraendo de la división (sirve pa sacar la solución "a mano"):
+select distinct v.codpie, v.codpro from ventas v join proveedor p on p.codpro = v.codpro;
+
+/*
+Ejercicio 3.24
+
+Compara el conjunto de todos los proyectos en Londres con los proyectos a los que se ha suministrado la pieza actual. 
+Si el resultado es vacío, la pieza ha sido suministrada a todos los proyectos en Londres.
+*/
+
+select codpie from pieza where not exists ( 
+select distinct pr.codpj from proyecto pr where pr.ciudad like 'Lo%' --Todos los proyectos de Londres (C. específica)
+
+minus --Menos
+
+select distinct v.codpj from ventas v where v.codpie = pieza.codpie --Todos los proyectos a los que se ha suministrado una pieza (C. general)
+); 
+
+--Consulta equivalente a sustraendo de la división:
+select distinct v.codpj, v.codpie from ventas v join proyecto p on p.codpj = v.codpj order by codpj, codpie;
+
+select codpj, codpie from ventas where codpie='P1' order by codpj;
+
+/*
+Ejercicio 3.25
+
+Compara el conjunto de todos las piezas procedentes de una ciudad donde hay un proyecto con todas 
+las piezas suministradas por el proveedor actual.
+Si el resultado es vacío, todas las piezas del primer conjunto han sido proveídas por el proveedor
+(joe vaya juego d palabras)
+*/
+
+select codpro from proveedor where not exists(
+select pi.codpie from pieza pi join proyecto pr on pi.ciudad = pr.ciudad --Todas las piezas procedentes de una ciudad donde hay un proyecto (C. específico)
+
+minus --Menos
+
+select v.codpie from ventas v where v.codpro = proveedor.codpro --Todos las las piezas suministradas por un proveedor (C. general)
+);
+
+--Consulta equivalente a sustraendo de la división:
+select distinct v.codpro, v.codpie from ventas v join proveedor pr on v.codpro = pr.codpro order by codpro;
+---------------------------------------------------------------------------------------------------------------------------------

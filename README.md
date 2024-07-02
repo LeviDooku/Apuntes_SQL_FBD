@@ -16,4 +16,6 @@ Lista de contenidos hasta el momento:
 	- SELECT + clausulas: WHERE, LIKE, operadores (and, or, between, =).  
 - Consultas multitabla y consultas de unión:  
 	- JOIN, NATURAL JOIN, UNION, UNION ALL, MINUS, INTERSECT
+- Subconsultas:  
+	- Operadores (IN, ANY, ALL y comparadores), División
 
