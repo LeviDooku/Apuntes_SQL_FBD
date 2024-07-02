@@ -225,7 +225,7 @@ order by cantidad, fecha desc; --Ej. 3.18
 
 -- Subconsultas
 
-    -- Operadores: IN, ANY, ALL y comparadores
+    -- Operadores: IN, ANY, ALL y comparadores (<;>;<=;>=;<>)
     
 -- IN
 
@@ -233,8 +233,36 @@ select codpie from ventas
 where codpro in (
 select codpro from proveedor where ciudad like 'Lo%'); --Todas las piezas suministradas por proveedores de Londres
 
+select distinct codpie from ventas 
+where codpro in (
+select codpro from proveedor where ciudad like 'Mad%') --Ej. 3.19 (Para misma salida q 3.15 usar distinct)
+order by codpie; --Ahora puedo usar esto jeje
 
+select codpj from proyecto 
+where ciudad in (
+select ciudad from pieza);
+order by codpj;--Ej. 3.20
 
+select codpj from proyecto pj join pieza pi on pj.ciudad = pi.ciudad order by codpj; --Alternativa usando join (más intuitiva)
+
+select codpj from proyecto where codpj not in (
+    select distinct v.codpj from ventas v 
+    join pieza p on v.codpie = p.codpie
+    join proveedor pr on v.codpro = pr.codpro
+    where p.color='Rojo' and pr.ciudad='Londres'
+)
+order by codpj; --Ej. 3.21
+
+-- ANY / ALL 
+
+--(Ejs muy tontos, ya que solo hay un tornillo en la BD, por ende las salidas son las mismas en ambos casos)
+select codpie from pieza where peso > any (select peso from pieza where nompie like 'To%'); --Ejemplo 3.17 (alguna = ANY) más pesada que algún tornillo
+select codpie from pieza where peso > all (select peso from pieza where nompie like 'To%'); --Ej. 3.22 (cualquiera = ALL) más pesada que el tornillo más pesado
+
+select * from pieza where peso >= all (select peso from pieza); --Ej 3.23 ; >= para no excluir la mayor. Usando > busca una más pesada que la más pesada (no hay xd)
+select p1.nompie, p1.peso, p2.nompie, p2.peso from pieza p1, pieza p2 where p1.peso > p2.peso; --Ej 3.14 (Usa producto cartesiano; el resultado del 3.23 da una salida más limpia)
+
+    --La división (dio mio)
 ---------------------------------------------------------------------------------------------------------------------------------
 
 
