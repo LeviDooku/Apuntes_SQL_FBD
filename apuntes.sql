@@ -8,7 +8,7 @@
 --<ctrl + enter> para ejecutar las líneas seleccionadas
 
 describe ventas; 
-describe proyecto;
+describe proyecto;  
 describe proveedor; 
 describe pieza;
 
@@ -305,8 +305,6 @@ select distinct v.codpj from ventas v where v.codpie = pieza.codpie --Todos los 
 --Consulta equivalente a sustraendo de la división:
 select distinct v.codpj, v.codpie from ventas v join proyecto p on p.codpj = v.codpj order by codpj, codpie;
 
-select codpj, codpie from ventas where codpie='P1' order by codpj;
-
 /*
 Ejercicio 3.25
 
@@ -326,4 +324,105 @@ select v.codpie from ventas v where v.codpro = proveedor.codpro --Todos las las 
 
 --Consulta equivalente a sustraendo de la división:
 select distinct v.codpro, v.codpie from ventas v join proveedor pr on v.codpro = pr.codpro order by codpro;
+
 ---------------------------------------------------------------------------------------------------------------------------------
+
+-- Funciones de agregación
+
+    --Pequeña intro y ejs: sum(), min(), max(), avg() y count()
+    
+select max(cantidad) as maximo, min(cantidad) as minimo, sum(cantidad) as suma from ventas; --Muy útil usar renombramiento (alias)
+
+select max(distinct cantidad) as maximo, min(distinct cantidad) as minimo, sum(distinct cantidad) as suma from ventas; --El valor 'suma' es distinto, ya que no se tienen en cuenta repes
+
+select count(*) as suma from ventas where cantidad > 1000; --Ej. 3.26
+
+select max(peso) from pieza; --Ej. 3.27
+
+select codpie from pieza where peso = (select max(peso) from pieza); --Ej. 3.28 (La solución es bastante similar al 3.23) 
+
+select distinct codpro from ventas v1 where (
+select count(distinct fecha) from ventas v2 where v2.codpro = v1.codpro --Hay que hacer que las tuplas sean coincidentes para obtener el resultado
+) > 3; --Ej. 3.30 (haciendo grupos, mucho más easy)
+
+    --Formar grupos: group by y having
+    
+--Formar un grupo es organizar los datos en función de algún atributo.
+--'Having' funciona para el filtrado, de forma similar a 'where' pero para el grupo
+
+select codpro, count(*) as num_tuplas, max(cantidad) as max_cantidad from ventas
+group by codpro
+order by codpro;
+
+--La consulta anterior nos da, para cada codpro: su número de tuplas y su cantidad máxima de ventas.
+
+select codpie, avg(cantidad) as media from ventas
+group by codpie
+order by codpie; --Ej. 3.31
+
+select codpro, avg(cantidad) as media from ventas where codpie = 'P1'
+group by codpro
+order by codpro; --Ej. 3.32
+
+select codpj, sum(cantidad) as total from ventas
+group by codpj
+order by codpj; --Ej. 3.33
+
+select distinct codpro from ventas
+group by codpro
+having count(distinct fecha) > 3; --Ej. 3.30 usando grupos y having
+
+--Media de ventas de la pieza P1 por los proveedores que tienen entre 2 y 10 ventas de la misma
+select codpro, codpie, avg(cantidad) as media from ventas where codpie = 'P1'
+group by codpro, codpie
+having count(*) between 2 and 10;
+
+select p.nompro, p.codpro, sum(cantidad) as total from ventas v, proveedor p
+where p.codpro = v.codpro
+group by p.nompro, p.codpro
+having sum(cantidad) > 1000
+order by codpro; --Ej. 3.35
+
+select codpie, sum(cantidad) from ventas
+group by codpie
+having sum(cantidad) = (select max(sum(v.cantidad)) from ventas v group by v.codpie); --Ej. 3.36
+
+-- Y podrá uno pensar q si no se puede hacer:
+
+select codpie, max(sum(cantidad) from ventas group by codpie;
+
+-- Pues sql no lo permite, max(sum()) debe ir en una subconsulta de having porq mola
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+--Ejercicios adicionales capítulo 3
+
+--Ej. 3.42
+select codpro, sum(cantidad) from ventas
+group by codpro
+having sum(cantidad) > (select sum(cantidad) from ventas where codpro = 'S1'); 
+
+--Ej. 3.43 (El enunciado es un poco ambiguo)
+select codpro, sum(cantidad) from ventas
+group by codpro
+order by sum(cantidad) desc; --Ej. 3.43 (El enunciado es un poco ambiguo)
+
+--Ej. 3.44
+select codpro from proveedor where not exists (
+select pj.ciudad from proyecto pj join ventas v on pj.codpj = v.codpj where v.codpro = 'S3' --Todas las ciudades a las cuales suministra S3
+
+minus
+
+select pj.ciudad from proyecto pj join ventas v on pj.codpj = v.codpj where v.codpro = proveedor.codpro --CIudades a donde suministra el proveedor actual
+) and codpro <> 'S3'; 
+
+--(Para comparar resultados)
+select codpro, codpie, v.codpj, pj.ciudad from ventas v join proyecto pj on v.codpj = pj.codpj
+order by codpro, codpie;
+
+
+
+
+
+
+
