@@ -420,9 +420,66 @@ select pj.ciudad from proyecto pj join ventas v on pj.codpj = v.codpj where v.co
 select codpro, codpie, v.codpj, pj.ciudad from ventas v join proyecto pj on v.codpj = pj.codpj
 order by codpro, codpie;
 
+--Ej. 3.45
+select codpro from ventas 
+group by codpro
+having count(*) >= 10;
 
+--Ej. 3.46 (No hay ninguno, así que da vacío)
+select codpro from proveedor where not exists(
+select pi.codpie from pieza pi join ventas v on pi.codpie = v.codpie where v.codpro = 'S1' --Piezas suministradas por S1
 
+minus
 
+select v.codpie from ventas v where v.codpro = proveedor.codpro --Piezas suministradas por el proveedor actual
+) and codpro <> 'S1';
 
+--(Para comparar resultados)
+select distinct codpro, codpie from ventas order by codpro, codpie;
 
+--Ej. 3.47 (Pongo S3 para que salga algo xd)
+select codpro, sum(cantidad) as suma from ventas where codpro in (
 
+    select codpro from proveedor where not exists(
+        select pi.codpie from pieza pi join ventas v on pi.codpie = v.codpie where v.codpro = 'S3' --Piezas suministradas por S1
+        
+        minus
+        
+        select v.codpie from ventas v where v.codpro = proveedor.codpro --Piezas suministradas por el proveedor actual
+) 
+and codpro <> 'S3'
+
+) 
+group by codpro
+order by suma;
+
+--Ej. 3.48
+select codpj from proyecto where not exists (
+select pr.codpro from proveedor pr join ventas v on pr.codpro = v.codpro where v.codpie = 'P3' --Todos los proveedores que suministran P3
+
+minus
+
+select v.codpro from ventas v where v.codpj = proyecto.codpj --Todos los proveedores que suministran a el proyecto actual
+);
+
+--(Para comparar resultados)
+select v.codpro, v.codpie, v.codpj from ventas v order by v.codpro, v.codpie;
+
+--Ej. 3.49
+select codpro, avg(cantidad) as media from ventas where codpro in (
+    select codpro from ventas where codpie = 'P3')
+group by codpro
+order by codpro;
+
+--Ej. 3.53 (Voy a usar el color Blanco, porque es el unico repetido en la tabla. Gracias profes por poner enunciados entendibles y realizables!)
+select distinct v.codpro from ventas v join pieza pi on pi.codpie = v.codpie where pi.color = 'Blanco' --Proveedores que suministren blanco (jeje)
+group by v.codpro
+having count(distinct pi.codpie) = 1 --Proveedores que venden una pieza blanca
+order by v.codpro;
+
+--Ej. 3.54
+select v.codpro from ventas v join pieza pi on pi.codpie = v.codpie where pi.color = 'Blanco' --Proveedores que suministren blanco (jeje)
+group by v.codpro
+having count(distinct pi.codpie) = (select count(distinct codpie) from pieza where color = 'Blanco') --Los que vendan el número de veces que aparezca el blanco en la tabla de piezas, habiendo usado distinct, venden TODAS las blancas
+order by v.codpro;
+    
