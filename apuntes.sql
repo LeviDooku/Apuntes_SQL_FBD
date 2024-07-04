@@ -405,7 +405,7 @@ having sum(cantidad) > (select sum(cantidad) from ventas where codpro = 'S1');
 --Ej. 3.43 (El enunciado es un poco ambiguo)
 select codpro, sum(cantidad) from ventas
 group by codpro
-order by sum(cantidad) desc; --Ej. 3.43 (El enunciado es un poco ambiguo)
+order by sum(cantidad) desc;
 
 --Ej. 3.44
 select codpro from proveedor where not exists (
@@ -489,7 +489,7 @@ select v.codpie from ventas v where v.codpro = proveedor.codpro --Piezas que ven
 
 minus
 
-select pi.codpie from pieza pi join ventas v on pi.codpie = v.codpie where color = 'Gris' --Piezas de color blanco
+select pi.codpie from pieza pi join ventas v on pi.codpie = v.codpie where color = 'Gris' --Piezas de color gris
 );
 
 --(Para comprobar resultados)
