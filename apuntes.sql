@@ -526,6 +526,22 @@ where codpro in(
 
 ---------------------------------------------------------------------------------------------------------------------------------
 
+--Vistas
+
+create view ConPermisoBuenasTardes(codpro, codpie, codpj, cantidad, fecha) as 
+    select * from ventas where (codpro, codpie, codpj) in (
+        select codpro, codpie, codpj from proveedor, pieza, proyecto
+        where proveedor.ciudad like 'Pa%' and 
+        pieza.ciudad like 'Pa%' and
+        proyecto.ciudad like 'Pa%'
+);
+
+select * from conpermisobuenastardes; --La vista se puede usar ahora como una tabla normal
+
+select owner, view_name, text from all_views order by view_name;
+
+
+
 
 
 
