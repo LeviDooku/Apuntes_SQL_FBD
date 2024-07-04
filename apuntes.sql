@@ -482,4 +482,52 @@ select v.codpro from ventas v join pieza pi on pi.codpie = v.codpie where pi.col
 group by v.codpro
 having count(distinct pi.codpie) = (select count(distinct codpie) from pieza where color = 'Blanco') --Los que vendan el número de veces que aparezca el blanco en la tabla de piezas, habiendo usado distinct, venden TODAS las blancas
 order by v.codpro;
-    
+
+--Ej. 3.55 (Usando cualquier otro color sale vacío)
+select codpro from proveedor where not exists (
+select v.codpie from ventas v where v.codpro = proveedor.codpro --Piezas que vende el proveedor actual
+
+minus
+
+select pi.codpie from pieza pi join ventas v on pi.codpie = v.codpie where color = 'Gris' --Piezas de color blanco
+);
+
+--(Para comprobar resultados)
+select v.codpro, pi.color, v.codpie from ventas v join pieza pi on v.codpie = pi.codpie order by codpro;
+
+--Ej. 3.56
+select v.codpro, pr.nompro from ventas v 
+join proveedor pr on v.codpro = pr.codpro
+join pieza pi on v.codpie = pi.codpie
+where pi.color = 'Blanco'
+group by v.codpro, pr.nompro
+having count(distinct pi.codpie) > 1
+order by codpro;
+
+--Ej. 3.57
+select v.codpro from ventas v 
+where codpro in(
+    select v.codpro from ventas v join pieza pi on pi.codpie = v.codpie where pi.color = 'Blanco'
+    group by v.codpro
+    having count(distinct pi.codpie) = (select count(distinct codpie) from pieza where color = 'Blanco')
+)
+group by v.codpro
+having count(*) = (select count(*) from ventas v2 where v2.codpro = v.codpro and v2.cantidad > 10);
+
+--Ej. 3.58
+update proveedor
+set status = x
+where codpro in(
+    select pr.codpro from proveedor pr join ventas v 
+    on pr.codpro = v.codpro
+    where v.codpie = 'P1'
+    group by v.codpro
+);
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
