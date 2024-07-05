@@ -540,6 +540,23 @@ select * from conpermisobuenastardes; --La vista se puede usar ahora como una ta
 
 select owner, view_name, text from all_views order by view_name;
 
+--Ej. 4.1
+create view ProveedoresLondres (codpro) as
+    select codpro from proveedor 
+    where proveedor.ciudad like 'Lo%'; 
+    
+insert into proveedoreslondres
+    values ('S7', 'Jose Suarez', 3, 'Granada'); --No podemos insertar Granada ; Aparte porq solo tiene atributo codpro
+    
+insert into proveedoreslondres
+    values ('S8'); --Esto tampoco vale, porq no se pueden insertar valores nulos
+    
+--Ej. 4.2
+create view NomproYCiudades (nompro, ciudad) as
+    select nompro, ciudad from proveedor;
+    
+insert into nomproyciudades
+    values ('Jose Suarez', 'Granada'); --No funciona porque no se puede insertar valores nulos
 
 
 
