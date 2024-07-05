@@ -558,9 +558,95 @@ create view NomproYCiudades (nompro, ciudad) as
 insert into nomproyciudades
     values ('Jose Suarez', 'Granada'); --No funciona porque no se puede insertar valores nulos
 
+---------------------------------------------------------------------------------------------------------------------------------
 
+--Privilegios
 
+describe user_tables;
 
+--Poner pública una tabla/vista y otorgar TODOS los privilegios. Incluido permitir otorgar privilegios a otros usuarios.
+grant all privileges on conpermisobuenastardes to public
+with grant option; 
 
+--Derogar permisos. Solo se pueden derogar los que el usuario ha concedido con GRANT. Si se ha usado 'with grant option' se produce efecto cascada.
+--CUIDADO: en la derogación de privilegios de sistema NO hay efecto cascada, solo en objetos
+revoke all privileges on conpermisobuenastardes from public; 
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+--Índices
+
+select * from Libros; --libros.sql (PK: LibroID)
+describe libros;
+
+    -- Creación, consulta y eliminación
+
+create index idx_libros on libros (Titulo); --No es necesario ni conveniente crear indices sobre claves primarias
+
+--Útil para consultas con estos campos o con los primeros.
+--Es importante el orden en la definición: más frecuencia de acceso, más a la izquierda. (Explicación más detallada en pag 61)
+create index idx_libros_compuesto on libros(autor, genero, anopublicacion); 
+
+select * from user_indexes; --Consultar todos los índices
+select * from user_indexes where index_name = 'IDX_LIBROS'; --Consultar uno en concreto
+
+drop index idx_libros_compuesto; --Eliminación
+
+--Reverse
+
+--Uso: se insertan muchos valores de forma consecutiva.
+--Ventaja: mejora rendimiento inserción, eliminando puntos calientes y distribución uniforme.
+--Desventaja: mala eficiencia para búsquedas por rango (claro, las claves están al revés)
+
+create index idx_reverse on libros (AnoPublicacion) reverse;
+
+--Bitmap
+
+--Uso: columnas con pocos valores distintos (booleanas o de estado p. ej)
+--Ventajas: reduce almacenamiento y muy eficiente en consultas de predicados (and, or, not)
+--Desventaja: no adecuado para columnas con muchas inserciones, actualizaciones o eliminaciones 
+
+create bitmap index idx_bitmap on libros (Paginas);
+
+--Tablas IOT
+
+--Uso: tablas pequeñas con muchos accesos. Beneficioso en accesos con clave primaria
+--Ventaja: mejora rendimiento en datos de clave primaria
+--Deventaja: inserciones y actus pueden ser más costosas. No soporta todas las características d las tablas normales
+
+create table tabla_iot (
+
+--...
+
+) organization index;
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+--Clusters
+
+--Uso: cuando se realizan uniones (consultas / inserciones ets) entre tablas basadas en una columna común.
+--Ventaja: mayor eficiencia en consultas, menor cantidad de accesos directos. Mejora del rendimiento general
+
+--Proceso de creación
+
+create cluster cluster_codpro(codpro varchar2(3)); --Creación del cluster
+
+create table proveedor_c(
+codpro varchar2(3) primary key,
+
+--...
+
+) cluster cluster_codpro (codpro) --tablas del cluster
+
+create table ventas_c(
+codpro varchar2(3) references proveedor_c(codpro)
+
+--...
+
+) cluster cluster_codpro (codpro) --tablas del cluster
+
+create index indice_cluster on cluster cluster_codpro; --Indice del cluster
+
+--Datos
 
 
