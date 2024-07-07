@@ -4,7 +4,7 @@
 
 Compendio de ejercicios, ejemplos y apuntes provenientes del cuadernillo de prácticas e inventados (algunas consultas no funcionan)  
 
-Los contenidos son extraídos la mayoría del cuadernillo aunque estos apuntes no siguen la estructura estricta del mismo.
+Los apuntes no están ordenados de la fisma cronología que en el cuadernillo. De igual forma, están separados por secciones y se indica e número de cada ejercicio realizado.  
 
 Lista de contenidos hasta el momento:
 
